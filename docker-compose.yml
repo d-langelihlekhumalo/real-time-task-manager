@@ -46,13 +46,13 @@ services:
     restart: unless-stopped
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
-      - ASPNETCORE_URLS=http://+:8080
+      - ASPNETCORE_URLS=http://+:5000
       - ConnectionStrings__DefaultConnection=Server=mysql;Database=${MYSQL_DATABASE:-TaskManagerDB};User=${MYSQL_USER:-taskmanager};Password=${MYSQL_PASSWORD:-taskmanager123};
       - Cors__AllowedOrigins=http://localhost:3000,https://localhost:3000,http://frontend:80
       - HealthChecks__Enabled=true
       - SwaggerUI__Enabled=false
     ports:
-      - "8080:8080"
+      - "5000:5000"
     depends_on:
       mysql:
         condition: service_healthy
@@ -62,7 +62,7 @@ services:
       - backend_logs:/app/logs
     healthcheck:
       test:
-        ["CMD", "curl", "-f", "http://localhost:8080/health", "||", "exit", "1"]
+        ["CMD", "curl", "-f", "http://localhost:5000/health", "||", "exit", "1"]
       interval: 30s
       timeout: 10s
       retries: 5
@@ -76,8 +76,8 @@ services:
       context: ./frontend/real-time-task-manager
       dockerfile: Dockerfile
       args:
-        - VITE_API_BASE_URL=http://localhost:8080/api
-        - VITE_SIGNALR_HUB_URL=http://localhost:8080/taskManagerHub
+        - VITE_API_BASE_URL=http://localhost:5000/api
+        - VITE_SIGNALR_HUB_URL=http://localhost:5000/taskManagerHub
     container_name: taskmanager-frontend
     restart: unless-stopped
     ports:

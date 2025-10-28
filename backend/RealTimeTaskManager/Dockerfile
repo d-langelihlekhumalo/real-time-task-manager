@@ -24,11 +24,11 @@ WORKDIR /app
 COPY --from=build /app/out .
 
 # Expose the port that the application will run on
-EXPOSE 8080
+EXPOSE 5000
 
 # Set environment variables
 ENV ASPNETCORE_ENVIRONMENT=Production
-ENV ASPNETCORE_URLS=http://*:8080
+ENV ASPNETCORE_URLS=http://*:5000
 
 # Create a non-root user for security
 RUN adduser --disabled-password --gecos '' appuser && chown -R appuser /app
