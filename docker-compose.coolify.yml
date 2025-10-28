@@ -1,0 +1,80 @@
+version: "3.8"
+
+services:
+  # ===========================
+  # DATABASE
+  # ===========================
+  mysql:
+    image: mysql:8.0
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-TaskManagerDB}
+      MYSQL_USER: ${MYSQL_USER:-taskmanager}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD}"]
+      timeout: 20s
+      retries: 10
+      interval: 30s
+
+  # ===========================
+  # BACKEND API
+  # ===========================
+  backend:
+    build:
+      context: ./backend/RealTimeTaskManager
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=http://+:8080
+      - ConnectionStrings__DefaultConnection=Server=mysql;Database=${MYSQL_DATABASE:-TaskManagerDB};User=${MYSQL_USER:-taskmanager};Password=${MYSQL_PASSWORD};
+      - Cors__AllowedOrigins=${FRONTEND_URL:-http://localhost:3000}
+      - HealthChecks__Enabled=true
+      - SwaggerUI__Enabled=${SWAGGER_ENABLED:-false}
+    ports:
+      - "8080:8080"
+    depends_on:
+      mysql:
+        condition: service_healthy
+    volumes:
+      - backend_logs:/app/logs
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health", "||", "exit", "1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+
+  # ===========================
+  # FRONTEND
+  # ===========================
+  frontend:
+    build:
+      context: ./frontend/real-time-task-manager
+      dockerfile: Dockerfile
+      args:
+        - VITE_API_BASE_URL=${BACKEND_URL:-http://localhost:8080}/api
+        - VITE_SIGNALR_HUB_URL=${SIGNALR_URL:-http://localhost:8080}/taskManagerHub
+    restart: unless-stopped
+    ports:
+      - "3000:80"
+    depends_on:
+      backend:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:80/", "||", "exit", "1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+# ===========================
+# VOLUMES
+# ===========================
+volumes:
+  mysql_data:
+  backend_logs:
