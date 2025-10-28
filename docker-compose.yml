@@ -1,4 +1,4 @@
-version: '3.8'
+version: "3.8"
 
 services:
   # ===========================
@@ -21,7 +21,17 @@ services:
     networks:
       - taskmanager-network
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD:-rootpassword123}"]
+      test:
+        [
+          "CMD",
+          "mysqladmin",
+          "ping",
+          "-h",
+          "localhost",
+          "-u",
+          "root",
+          "-p${MYSQL_ROOT_PASSWORD:-rootpassword123}",
+        ]
       timeout: 20s
       retries: 10
 
@@ -51,7 +61,8 @@ services:
     volumes:
       - backend_logs:/app/logs
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8080/health", "||", "exit", "1"]
+      test:
+        ["CMD", "curl", "-f", "http://localhost:8080/health", "||", "exit", "1"]
       interval: 30s
       timeout: 10s
       retries: 5

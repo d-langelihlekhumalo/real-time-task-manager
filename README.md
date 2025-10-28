@@ -81,6 +81,7 @@ A full-stack real-time task management application demonstrating **SignalR** int
    ```
 
 4. **Access the application**
+
    - Frontend: http://localhost:3000
    - Backend API: http://localhost:8080
    - Swagger UI: http://localhost:8080/swagger
