@@ -1,0 +1,17 @@
+# Nixpacks configuration for frontend deployment
+# Place this in frontend/real-time-task-manager/.nixpacks/nixpacks.toml
+
+[variables]
+NIXPACKS_METADATA = "nodejs"
+
+[phases.setup]
+nixPkgs = ["nodejs", "npm"]
+
+[phases.install]
+cmds = ["npm ci"]
+
+[phases.build]
+cmds = ["npm run build"]
+
+[start]
+cmd = "npm run preview"

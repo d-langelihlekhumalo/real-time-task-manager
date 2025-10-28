@@ -1,0 +1,8 @@
+# This file tells Coolify to ignore certain files during deployment
+node_modules/
+.git/
+frontend/
+*.md
+logs/
+bin/Debug/
+obj/
