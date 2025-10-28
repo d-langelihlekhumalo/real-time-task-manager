@@ -5,7 +5,7 @@
 NIXPACKS_METADATA = "c#"
 
 [phases.setup]
-nixPkgs = ["dotnet-sdk"]
+nixPkgs = ["dotnet-sdk_8"]
 
 [phases.install]
 cmds = ["dotnet restore"]
