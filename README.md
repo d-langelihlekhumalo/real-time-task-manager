@@ -63,8 +63,8 @@ A full-stack real-time task management application demonstrating **SignalR** int
 1. **Clone the repository**
 
    ```bash
-   git clone <repository-url>
-   cd RealTimeTaskManager
+   git clone https://github.com/d-langelihlekhumalo/real-time-task-manager.git
+   cd real-time-task-manager
    ```
 
 2. **Configure environment**
