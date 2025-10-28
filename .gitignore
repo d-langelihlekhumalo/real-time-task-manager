@@ -1,0 +1,221 @@
+# Real-Time Task Manager - Root .gitignore
+
+# ===========================
+# BACKEND (.NET Core)
+# ===========================
+
+# Build outputs
+**/bin/
+**/obj/
+**/out/
+
+# User-specific files
+*.rsuser
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Visual Studio files
+.vs/
+.vscode/
+*.swp
+*.swo
+
+# Rider IDE files
+.idea/
+
+# Build results
+[Dd]ebug/
+[Dd]ebugPublic/
+[Rr]elease/
+[Rr]eleases/
+x64/
+x86/
+[Ww][Ii][Nn]32/
+[Aa][Rr][Mm]/
+[Aa][Rr][Mm]64/
+bld/
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Ll]ogs/
+
+# .NET Core
+project.lock.json
+project.fragment.lock.json
+artifacts/
+
+# ASP.NET Core
+**/Properties/launchSettings.json
+
+# Entity Framework
+**/**/Migrations/
+
+# ===========================
+# FRONTEND (React/Node.js)
+# ===========================
+
+# Dependencies
+**/node_modules/
+**/npm-debug.log*
+**/yarn-debug.log*
+**/yarn-error.log*
+**/pnpm-debug.log*
+**/lerna-debug.log*
+
+# Build outputs
+**/dist/
+**/dist-ssr/
+**/build/
+**/.next/
+**/out/
+
+# Runtime data
+**/pids
+**/*.pid
+**/*.seed
+**/*.pid.lock
+
+# Coverage directory used by tools like istanbul
+**/coverage/
+**/.nyc_output
+
+# Grunt intermediate storage
+**/.grunt
+
+# Bower dependency directory
+**/bower_components
+
+# ===========================
+# ENVIRONMENT & CONFIG
+# ===========================
+
+# Environment files
+.env
+.env.local
+.env.development
+.env.development.local
+.env.test.local
+.env.production
+.env.production.local
+**/.env
+**/.env.local
+**/.env.development.local
+**/.env.production.local
+
+# ===========================
+# DOCKER
+# ===========================
+
+# Docker override files
+docker-compose.override.yml
+**/docker-compose.override.yml
+
+# ===========================
+# DATABASE
+# ===========================
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+
+# SQL Server files
+*.mdf
+*.ldf
+
+# MySQL
+*.sql
+
+# ===========================
+# LOGS
+# ===========================
+
+# Application logs
+**/logs/
+**/*.log
+**/log-*.txt
+
+# ===========================
+# TEMPORARY FILES
+# ===========================
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Windows image file caches
+Thumbs.db
+ehthumbs.db
+
+# Folder config file
+Desktop.ini
+
+# Recycle Bin used on file shares
+$RECYCLE.BIN/
+
+# ===========================
+# EDITOR AND IDE
+# ===========================
+
+# VS Code
+.vscode/
+!.vscode/extensions.json
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+
+# IntelliJ IDEA
+.idea/
+*.iws
+*.iml
+*.ipr
+
+# Sublime Text
+*.sublime-project
+*.sublime-workspace
+
+# Vim
+*.swp
+*.swo
+*~
+
+# ===========================
+# CERTIFICATES & KEYS
+# ===========================
+
+# SSL certificates
+*.pem
+*.key
+*.crt
+*.p12
+*.pfx
+
+# ===========================
+# MISC
+# ===========================
+
+# Backup files
+*.bak
+*.backup
+*.tmp
+
+# Archive files
+*.7z
+*.dmg
+*.gz
+*.iso
+*.jar
+*.rar
+*.tar
+*.zip
+
+# Local configuration
+**/appsettings.Local.json
+**/local.json
