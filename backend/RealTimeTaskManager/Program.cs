@@ -34,13 +34,28 @@ var registration = builder.Services.RegisterAssemblyPublicNonGenericClasses(asse
                            .AsPublicImplementedInterfaces(ServiceLifetime.Transient);
 
 // Get connection string from environment variable or configuration
-var connectionString = Environment.GetEnvironmentVariable("ConnectionStrings__DefaultConnection") 
-                      ?? builder.Configuration.GetConnectionString("DefaultConnection");
+Log.Information("Reading database connection string...");
+
+var envConnectionString = Environment.GetEnvironmentVariable("ConnectionStrings__DefaultConnection");
+var configConnectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+
+Log.Information("Environment variable ConnectionStrings__DefaultConnection: {EnvConnString}", 
+    string.IsNullOrEmpty(envConnectionString) ? "NOT SET" : "SET (length: " + envConnectionString.Length + ")");
+Log.Information("Configuration DefaultConnection: {ConfigConnString}", 
+    string.IsNullOrEmpty(configConnectionString) ? "NOT SET" : "SET (length: " + configConnectionString.Length + ")");
+
+var connectionString = envConnectionString ?? configConnectionString;
 
 if (string.IsNullOrEmpty(connectionString))
 {
+    Log.Fatal("Database connection string is not configured. Environment variable: {EnvVar}, Configuration: {Config}", 
+        envConnectionString ?? "NULL", configConnectionString ?? "NULL");
     throw new InvalidOperationException("Database connection string is not configured. Please set ConnectionStrings__DefaultConnection environment variable or add it to appsettings.json");
 }
+
+Log.Information("Using connection string from: {Source}", envConnectionString != null ? "Environment Variable" : "Configuration");
+Log.Information("Connection string details - Server: {Server}, Database: {Database}", 
+    ExtractServerFromConnectionString(connectionString), ExtractDatabaseFromConnectionString(connectionString));
 
 // Add DbContext with connection pooling
 builder.Services.AddDbContextPool<ApplicationDbContext>(options =>
@@ -209,19 +224,24 @@ if (healthChecksConfig.Enabled)
 }
 
 // Ensure database is created and seed demo data
+Log.Information("Starting database initialization and seeding...");
 using (var scope = app.Services.CreateScope())
 {
     var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
     var dataSeedingService = scope.ServiceProvider.GetRequiredService<IDataSeedingService>();
     
+    Log.Information("Database context obtained from DI container");
+    Log.Information("Attempting to connect to database and ensure it's created...");
+    
     try
     {
         dbContext.Database.EnsureCreated();
-        Log.Information("Database connection verified successfully");
+        Log.Information("Database connection verified successfully and database ensured");
         
         // Seed demo data on startup
+        Log.Information("Starting demo data seeding...");
         await dataSeedingService.SeedDemoDataAsync();
-        Log.Information("Demo data seeding completed");
+        Log.Information("Demo data seeding completed successfully");
     }
     catch (Exception ex)
     {
@@ -233,3 +253,32 @@ using (var scope = app.Services.CreateScope())
 Log.Information("Starting Real Time Task Manager API");
 
 app.Run();
+
+// Helper methods for connection string parsing
+static string ExtractServerFromConnectionString(string connectionString)
+{
+    try
+    {
+        var parts = connectionString.Split(';');
+        var serverPart = parts.FirstOrDefault(p => p.Trim().StartsWith("Server=", StringComparison.OrdinalIgnoreCase));
+        return serverPart?.Split('=')[1] ?? "Unknown";
+    }
+    catch
+    {
+        return "Parse Error";
+    }
+}
+
+static string ExtractDatabaseFromConnectionString(string connectionString)
+{
+    try
+    {
+        var parts = connectionString.Split(';');
+        var dbPart = parts.FirstOrDefault(p => p.Trim().StartsWith("Database=", StringComparison.OrdinalIgnoreCase));
+        return dbPart?.Split('=')[1] ?? "Unknown";
+    }
+    catch
+    {
+        return "Parse Error";
+    }
+}

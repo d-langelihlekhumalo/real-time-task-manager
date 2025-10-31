@@ -16,8 +16,8 @@ FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
 WORKDIR /app
 
 # Expose the port the app will listen on
-ENV ASPNETCORE_URLS=http://*:8080
-EXPOSE 8080
+ENV ASPNETCORE_URLS=http://*:5000
+EXPOSE 5000
 
 # Copy published output
 COPY --from=build /app/out ./
