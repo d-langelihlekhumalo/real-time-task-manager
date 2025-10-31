@@ -1,112 +1,25 @@
+# This Docker Compose is for local development only
+# For Coolify deployment, use the Dockerfile in backend/RealTimeTaskManager/
+
 version: "3.8"
 
 services:
   # ===========================
-  # DATABASE
+  # LOCAL DEVELOPMENT ONLY
   # ===========================
-  mysql:
-    image: mysql:8.0
-    container_name: taskmanager-mysql
-    restart: unless-stopped
-    environment:
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-t3LemdslGrNPaDpbJ97UK9r8gK4uAdaCf8pN8q7kaiZSoWHkmqm4GMUdwqYSr1sj}
-      MYSQL_DATABASE: ${MYSQL_DATABASE:-default}
-      MYSQL_USER: ${MYSQL_USER:-mysql}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-pHEYVA2PomMWOnOKHJOLMqYaFDMRhLatqD2kBJOvW5o9CHIkQYnLKGVFMItMXx}
-    ports:
-      - "3306:3306"
-    volumes:
-      - mysql_data:/var/lib/mysql
-      - ./scripts/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
-    networks:
-      - taskmanager-network
-    healthcheck:
-      test:
-        [
-          "CMD",
-          "mysqladmin",
-          "ping",
-          "-h",
-          "localhost",
-          "-u",
-          "root",
-          "-p${MYSQL_ROOT_PASSWORD:-t3LemdslGrNPaDpbJ97UK9r8gK4uAdaCf8pN8q7kaiZSoWHkmqm4GMUdwqYSr1sj}",
-        ]
-      timeout: 20s
-      retries: 10
-
-  # ===========================
-  # BACKEND API
-  # ===========================
-  backend:
+  # Use this for local development with: docker-compose up
+  # For Coolify: Use Dockerfile deployment with separate MySQL service
+  
+  backend-local:
     build:
       context: ./backend/RealTimeTaskManager
       dockerfile: Dockerfile
-    container_name: taskmanager-backend
-    restart: unless-stopped
+    container_name: taskmanager-backend-local
     environment:
-      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:5000
-      - ConnectionStrings__DefaultConnection=Server=mysql;Port=3306;Database=${MYSQL_DATABASE:-default};Uid=${MYSQL_USER:-mysql};Pwd=${MYSQL_PASSWORD:-pHEYVA2PomMWOnOKHJOLMqYaFDMRhLatqD2kBJOvW5o9CHIkQYnLKGVFMItMXx};SslMode=Preferred;AllowPublicKeyRetrieval=true;
-      - Cors__AllowedOrigins=http://localhost:3000,https://localhost:3000,http://frontend:80
-      - HealthChecks__Enabled=true
-      - SwaggerUI__Enabled=true
+      - ConnectionStrings__DefaultConnection=Server=localhost;Port=3306;Database=TaskManagerDB;Uid=root;Pwd=password;
     ports:
       - "5000:5000"
-    depends_on:
-      mysql:
-        condition: service_healthy
-    networks:
-      - taskmanager-network
-    volumes:
-      - backend_logs:/app/logs
-    healthcheck:
-      test:
-        ["CMD", "curl", "-f", "http://localhost:5000/health", "||", "exit", "1"]
-      interval: 30s
-      timeout: 10s
-      retries: 5
-      start_period: 40s
-
-  # ===========================
-  # FRONTEND
-  # ===========================
-  frontend:
-    build:
-      context: ./frontend/real-time-task-manager
-      dockerfile: Dockerfile
-      args:
-        - VITE_API_BASE_URL=http://localhost:5000/api
-        - VITE_SIGNALR_HUB_URL=http://localhost:5000/taskManagerHub
-    container_name: taskmanager-frontend
-    restart: unless-stopped
-    ports:
-      - "3000:80"
-    depends_on:
-      backend:
-        condition: service_healthy
-    networks:
-      - taskmanager-network
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:80/", "||", "exit", "1"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 10s
-
-# ===========================
-# NETWORKS
-# ===========================
-networks:
-  taskmanager-network:
-    driver: bridge
-    name: taskmanager-network
-
-# ===========================
-# VOLUMES
-# ===========================
-volumes:
-  mysql_data:
-    name: taskmanager-mysql-data
-  backend_logs:
-    name: taskmanager-backend-logs
+    profiles:
+      - local-dev
