@@ -9,10 +9,10 @@ services:
     container_name: taskmanager-mysql
     restart: unless-stopped
     environment:
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-rootpassword123}
-      MYSQL_DATABASE: ${MYSQL_DATABASE:-TaskManagerDB}
-      MYSQL_USER: ${MYSQL_USER:-taskmanager}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-taskmanager123}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-t3LemdslGrNPaDpbJ97UK9r8gK4uAdaCf8pN8q7kaiZSoWHkmqm4GMUdwqYSr1sj}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-default}
+      MYSQL_USER: ${MYSQL_USER:-mysql}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-pHEYVA2PomMWOnOKHJOLMqYaFDMRhLatqD2kBJOvW5o9CHIkQYnLKGVFMItMXx}
     ports:
       - "3306:3306"
     volumes:
@@ -30,7 +30,7 @@ services:
           "localhost",
           "-u",
           "root",
-          "-p${MYSQL_ROOT_PASSWORD:-rootpassword123}",
+          "-p${MYSQL_ROOT_PASSWORD:-t3LemdslGrNPaDpbJ97UK9r8gK4uAdaCf8pN8q7kaiZSoWHkmqm4GMUdwqYSr1sj}",
         ]
       timeout: 20s
       retries: 10
@@ -47,10 +47,10 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
       - ASPNETCORE_URLS=http://+:5000
-      - ConnectionStrings__DefaultConnection=Server=mysql;Database=${MYSQL_DATABASE:-TaskManagerDB};User=${MYSQL_USER:-taskmanager};Password=${MYSQL_PASSWORD:-taskmanager123};
+      - ConnectionStrings__DefaultConnection=Server=mysql;Port=3306;Database=${MYSQL_DATABASE:-default};Uid=${MYSQL_USER:-mysql};Pwd=${MYSQL_PASSWORD:-pHEYVA2PomMWOnOKHJOLMqYaFDMRhLatqD2kBJOvW5o9CHIkQYnLKGVFMItMXx};SslMode=Preferred;AllowPublicKeyRetrieval=true;
       - Cors__AllowedOrigins=http://localhost:3000,https://localhost:3000,http://frontend:80
       - HealthChecks__Enabled=true
-      - SwaggerUI__Enabled=false
+      - SwaggerUI__Enabled=true
     ports:
       - "5000:5000"
     depends_on:

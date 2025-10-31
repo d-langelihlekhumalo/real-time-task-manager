@@ -1,0 +1,45 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:8.0
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-t3LemdslGrNPaDpbJ97UK9r8gK4uAdaCf8pN8q7kaiZSoWHkmqm4GMUdwqYSr1sj}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-default}
+      MYSQL_USER: ${MYSQL_USER:-mysql}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-pHEYVA2PomMWOnOKHJOLMdYaFDMRihLatqD2kBJOvW5o9CHIkQYnLKGVFMItMXx}
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "mysql", "-p${MYSQL_PASSWORD:-pHEYVA2PomMWOnOKHJOLMdYaFDMRihLatqD2kBJOvW5o9CHIkQYnLKGVFMItMXx}"]
+      timeout: 30s
+      retries: 5
+      interval: 10s
+      start_period: 30s
+
+  backend:
+    build: ./backend/RealTimeTaskManager
+    restart: unless-stopped
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ConnectionStrings__DefaultConnection=Server=mysql;Port=3306;Database=${MYSQL_DATABASE:-default};Uid=${MYSQL_USER:-mysql};Pwd=${MYSQL_PASSWORD:-pHEYVA2PomMWOnOKHJOLMdYaFDMRihLatqD2kBJOvW5o9CHIkQYnLKGVFMItMXx};SslMode=Preferred;AllowPublicKeyRetrieval=true;
+      - SwaggerUI__Enabled=true
+      - HealthChecks__Enabled=true
+      - Cors__AllowedOrigins__0=*
+    ports:
+      - "5000:5000"
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  mysql_data:
